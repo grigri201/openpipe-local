@@ -1,0 +1,25 @@
+version: '3.1'
+services:
+  postgres:
+    image: postgres
+    restart: always
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: openpipe
+      POSTGRES_PASSWORD: openpipe
+      POSTGRES_USER: openpipe
+    ports:
+      - "5432:5432"
+  app:
+    container_name: openpipe-local
+    build: .
+    restart: always
+    depends_on:
+      - postgres
+    volumes:
+      - ./.env:/app/openpipe/app/.env
+    command: sh -c "cd openpipe/app && pnpm run codegen:db && pnpm dev"
+    ports:
+      - "3000:3000"
+      - "3318:3318"
